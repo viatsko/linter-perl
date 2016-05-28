@@ -1,4 +1,4 @@
-linter-perl package
+linter-perl-remote package
 ===================
 
 This linter plugin for [Linter](https://github.com/AtomLinter/Linter) provides an interface to perl.
