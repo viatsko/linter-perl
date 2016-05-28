@@ -46,7 +46,7 @@ module.exports = class LinterPerl
   destructor: ->
     @subscriptions.dispose()
 
-  RE = /(.*) at (.*) line (\d+)/
+  RE = /(.*) at (.*) line (\d+)(?=,|$)/
 
   lint: (textEditor) ->
     rootDirectory = util.determineRootDirectory(textEditor)
@@ -69,6 +69,8 @@ module.exports = class LinterPerl
               [lineNum-1, buffer.lineLengthForRow(lineNum-1)]
             ]
           if range and message?.length
+            filePath = rootDirectory + '/' + filePath if filePath.indexOf(rootDirectory) == -1
+
             results.push {
               type: 'Error'
               text: message
