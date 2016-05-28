@@ -1,7 +1,7 @@
 {
   "name": "linter-perl-remote",
   "main": "./lib/init",
-  "version": "0.1.0",
+  "version": "0.8.1",
   "description": "Lint perl on the fly, remotely, using perl (B::Lint)",
   "repository": "https://github.com/viatsko/linter-perl-remote",
   "license": "MIT",
