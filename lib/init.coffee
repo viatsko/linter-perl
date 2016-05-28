@@ -61,9 +61,12 @@ module.exports =
       B::Lint options; "-MO=Lint,HERE".
       (ex. "all,no-bare-subs,no-context")
       """
+    configFileName:
+      type: 'string'
+      default: '.perl-lint-remote.json'
 
   activate: ->
-    require("atom-package-deps").install("linter-perl")
+    require("atom-package-deps").install("linter-perl-remote")
     @linterPerl = new LinterPerl @config
 
   deactivate: ->

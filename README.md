@@ -36,6 +36,16 @@ You can configure linter-perl by editing ~/.atom/config.cson (choose Open Your C
   "lintOptions": "all"
 ```
 
+In order to work with remote server, you need this in the root of your perl project:
+
+```json
+{
+  "host": "dev-star",
+  "root": "/usr/local/myremotetreerepo",
+  "executable": "/usr/local/bin/perl"
+}
+```
+
 NOTE: "The current root directory" is the root directory in tree-view
 which contains the file opened in the active text editor.
 If no root directories contain the file, its parent directory is selected

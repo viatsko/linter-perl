@@ -15,6 +15,8 @@ module.exports = class LinterPerl
   scope: "file"
   lintOnFly: true
 
+  configCache: {}
+
   #---
 
   config: {}
@@ -77,15 +79,45 @@ module.exports = class LinterPerl
 
       filePath = textEditor.getPath()
       {command, args} = @buildCommand filePath, rootDirectory
-      options = cwd: rootDirectory
-      process = new BufferedProcess \
-        {command, args, stdout, stderr, exit, options}
-      process.onWillThrowError ({error, handle}) ->
-        atom.notifications.addError "Failed to run #{command}.",
-          detail: error.message
-          dismissable: true
-        handle()
-        resolve []
+
+      configPath = path.join rootDirectory, atom.config.get('linter-perl-remote.configFileName')
+
+      if !@configCache[configPath]
+        if fs.existsSync configPath
+          @configCache[configPath] = require configPath
+        else
+          @configCache[configPath] = 'ignore'
+
+      if @configCache[configPath] != 'ignore'
+        remoteConfig = @configCache[configPath]
+
+        for d, i in args
+          args[i] = d.replace rootDirectory, remoteConfig.root
+
+        args[args.length - 1] = args[args.length - 1].replace remoteConfig.root + '/', ''
+
+        args = ['-c', 'ssh -A ' + remoteConfig.host + ' \'cd ' + remoteConfig.root + ';' + remoteConfig.executable + ' ' + args.join(' ') + '\'']
+
+        command = 'sh'
+
+        process = new BufferedProcess \
+          {command, args, stdout, stderr, exit, options}
+        process.onWillThrowError ({error, handle}) ->
+          atom.notifications.addError "Failed to run #{command}.",
+            detail: error.message
+            dismissable: true
+          handle()
+          resolve []
+      else
+        options = cwd: rootDirectory
+        process = new BufferedProcess \
+          {command, args, stdout, stderr, exit, options}
+        process.onWillThrowError ({error, handle}) ->
+          atom.notifications.addError "Failed to run #{command}.",
+            detail: error.message
+            dismissable: true
+          handle()
+          resolve []
 
     new Promise (resolve, reject) =>
       @checkBLint rootDirectory
